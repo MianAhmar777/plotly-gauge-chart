@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jun 26 05:32:04 2025
+@author: Ahmar
+"""
+
+import plotly.graph_objects as go
+import plotly.io as pio
+import webbrowser
+
+# --------------------------------------------------------------
+# 1) Force Plotly to use your system browser
+# --------------------------------------------------------------
+pio.renderers.default = "browser"     # ← key line for Spyder users
+
+# --------------------------------------------------------------
+# Gauge parameters (edit as you like)
+# --------------------------------------------------------------
+value      = 65          # current reading
+threshold  = 80          # red line shows “danger” zone
+title_txt  = "Speed"     # dial title
+min_val    = 0           # start of scale
+max_val    = 100         # end of scale
+
+# --------------------------------------------------------------
+# Build the gauge
+# --------------------------------------------------------------
+fig = go.Figure(
+    go.Indicator(
+        mode   = "gauge+number",
+        value  = value,
+        title  = {"text": title_txt, "font": {"size": 24}},
+        gauge  = {
+            "axis":      {"range": [min_val, max_val]},
+            "bar":       {"color": "darkblue"},
+            "steps": [
+                {"range": [min_val, 0.5 * max_val], "color": "lightgray"},
+                {"range": [0.5 * max_val, max_val], "color": "gray"}
+            ],
+            "threshold": {
+                "line":      {"color": "red", "width": 4},
+                "thickness": 0.75,
+                "value":     threshold
+            }
+        }
+    )
+)
+
+fig.update_layout(height=400, margin=dict(t=50, b=0, l=0, r=0))
+
+# --------------------------------------------------------------
+# Show the gauge
+# --------------------------------------------------------------
+try:
+    fig.show()                                 # should pop up in browser
+except Exception as e:
+    print("Plotly couldn’t open automatically:", e)
+    # fallback: write HTML and open manually
+    outfile = "gauge.html"
+    fig.write_html(outfile)
+    webbrowser.open(outfile)
+    print(f"Gauge saved to {outfile} and opened in your browser.")
